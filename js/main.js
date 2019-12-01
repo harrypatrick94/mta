@@ -29,6 +29,16 @@ const mta = {
 
   trainTrip: [],
 
+  unionOnNLine: 4,
+  oneBeforeUnionNLine: 3,
+  oneAfterUnionNLine: 5,
+  unionOnLLine: 2,
+  oneBeforeUnionLLine: 1,
+  oneAfterUnionLLine: 3,
+  unionOnSixLine: 4,
+  oneBeforeUnionSixLine: 3,
+  oneAfterUnionSixLine: 5,
+
   findIndexOfNLineSations: function (stops) {
     return this.nLine.indexOf(stops)},  // finds the index from a loop of the name of the station on N line
 
@@ -83,13 +93,13 @@ const mta = {
   }, //allows travel along the six
 
   nLineToOtherLine: function (enterTrainAt){
-    if (enterTrainAt <= 4) {
-      for (let i = enterTrainAt; i <= 3; i++) {
+    if (enterTrainAt < this.unionOnNLine) {
+      for (let i = enterTrainAt; i <= this.unionOnNLine; i++) {
         let stops = this.nLine[i]
         this.trainTrip.push(stops);
       }
     } else {
-      for (let k = enterTrainAt; k >= 5; k--) {
+      for (let k = enterTrainAt; k >= this.unionOnNLine; k--) {
         let stops = this.nLine[k]
         this.trainTrip.push(stops);
       }
@@ -97,13 +107,13 @@ const mta = {
   }, //train will start on nline and finish at union square
 
   otherLineToNLine: function (exitTrainAt) {
-    if (exitTrainAt < 4) {
-      for (var i = 4; i >= exitTrainAt; i--) {
+    if (exitTrainAt <= this.unionOnNLine) {
+      for (var i = this.oneBeforeUnionNLine; i >= exitTrainAt; i--) {
         let stops = this.nLine[i]
         this.trainTrip.push(stops);
       }
       } else {
-        for (let k = 4; k <= exitTrainAt; k++) {
+        for (let k = this.oneAfterUnionNLine; k <= exitTrainAt; k++) {
           let stops = this.nLine[k]
           this.trainTrip.push(stops);
         }
@@ -111,13 +121,13 @@ const mta = {
     }, // travels from union square to other lines
 
   lLineToOtherLine: function (enterTrainAt){
-    if (enterTrainAt <= 2) {
-      for (let i = enterTrainAt; i <= 1; i++) {
+    if (enterTrainAt < this.unionOnLLine) {
+      for (let i = enterTrainAt; i <= this.unionOnLLine; i++) {
         let stops = this.lLine[i]
         this.trainTrip.push(stops);
       }
     } else {
-      for (let k = enterTrainAt; k >= 3; k--) {
+      for (let k = enterTrainAt; k >= this.unionOnLLine; k--) {
         let stops = this.lLine[k]
         this.trainTrip.push(stops);
       }
@@ -125,13 +135,13 @@ const mta = {
   }, // train will start on lline and finish at union square
 
   otherLineToLLine: function (exitTrainAt) {
-      if (exitTrainAt < 2) {
-        for (var i = 2; i >= exitTrainAt; i--) {
+      if (exitTrainAt <= this.unionOnLLine) {
+        for (var i = this.oneBeforeUnionLLine; i >= exitTrainAt; i--) {
           let stops = this.lLine[i]
           this.trainTrip.push(stops);
         }
         } else {
-          for (let k = 2; k <= exitTrainAt; k++) {
+          for (let k = this.oneAfterUnionLLine; k <= exitTrainAt; k++) {
             let stops = this.lLine[k]
             this.trainTrip.push(stops);
           }
@@ -139,13 +149,13 @@ const mta = {
       },
 
   sixLineToOtherLine: function (enterTrainAt){
-    if (enterTrainAt <= 4) {
-      for (let i = enterTrainAt; i <= 3; i++) {
+    if (enterTrainAt < this.unionOnSixLine) {
+      for (let i = enterTrainAt; i <= this.unionOnSixLine; i++) {
         let stops = this.sixLine[i]
         this.trainTrip.push(stops);
       }
     } else {
-      for (let k = enterTrainAt; k >= 5; k--) {
+      for (let k = enterTrainAt; k >= this.unionOnSixLine; k--) {
         let stops = this.sixLine[k]
         this.trainTrip.push(stops);
       }
@@ -153,20 +163,20 @@ const mta = {
   }, // train will start on sixline and finish at union Square
 
   otherLineToSixLine: function (exitTrainAt) {
-    if (exitTrainAt < 4) {
-      for (var i = 4; i >= exitTrainAt; i--) {
+    if (exitTrainAt <= this.unionOnSixLine) {
+      for (var i = this.oneBeforeUnionSixLine; i >= exitTrainAt; i--) {
         let stops = this.sixLine[i]
         this.trainTrip.push(stops);
         }
       } else {
-        for (let k = 4; k <= exitTrainAt; k++) {
+        for (let k = this.oneAfterUnionSixLine; k <= exitTrainAt; k++) {
           let stops = this.sixLine[k]
           this.trainTrip.push(stops);
         }
       }
     },
 
-  defineTheLine: function (startingLine, firstStop, endingLine, lastStop) {
+  planTrip: function (startingLine, firstStop, endingLine, lastStop) {
 // gets the index of the first stop
     if (startingLine === 'nLine') {
       var ourFirstStop = this.findIndexOfNLineSations(firstStop)
@@ -219,10 +229,7 @@ const mta = {
 }
 
 
-mta.defineTheLine('sixLine', 'Astor Place', 'nLine', '8th')
-// mta.sixLineToOtherLine(1)
-// mta.otherLineToLLine(4)
-
+mta.planTrip('sixLine', 'Grand Central', 'lLine', '8th')
 
 console.log(mta.trainTrip);
 
