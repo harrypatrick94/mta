@@ -28,6 +28,8 @@ const mta = {
   ], // line
 
   trainTrip: [],
+  firstHalf: [],
+  secondHalf: [],
 
   unionOnNLine: 4,
   oneBeforeUnionNLine: 3,
@@ -96,12 +98,12 @@ const mta = {
     if (enterTrainAt < this.unionOnNLine) {
       for (let i = enterTrainAt; i <= this.unionOnNLine; i++) {
         let stops = this.nLine[i]
-        this.trainTrip.push(stops);
+        this.firstHalf.push(stops);
       }
     } else {
       for (let k = enterTrainAt; k >= this.unionOnNLine; k--) {
         let stops = this.nLine[k]
-        this.trainTrip.push(stops);
+        this.firstHalf.push(stops);
       }
     }
   }, //train will start on nline and finish at union square
@@ -110,12 +112,12 @@ const mta = {
     if (exitTrainAt <= this.unionOnNLine) {
       for (var i = this.oneBeforeUnionNLine; i >= exitTrainAt; i--) {
         let stops = this.nLine[i]
-        this.trainTrip.push(stops);
+        this.secondHalf.push(stops);
       }
       } else {
         for (let k = this.oneAfterUnionNLine; k <= exitTrainAt; k++) {
           let stops = this.nLine[k]
-          this.trainTrip.push(stops);
+          this.secondHalf.push(stops);
         }
       }
     }, // travels from union square to other lines
@@ -124,12 +126,12 @@ const mta = {
     if (enterTrainAt < this.unionOnLLine) {
       for (let i = enterTrainAt; i <= this.unionOnLLine; i++) {
         let stops = this.lLine[i]
-        this.trainTrip.push(stops);
+        this.firstHalf.push(stops);
       }
     } else {
       for (let k = enterTrainAt; k >= this.unionOnLLine; k--) {
         let stops = this.lLine[k]
-        this.trainTrip.push(stops);
+        this.firstHalf.push(stops);
       }
     }
   }, // train will start on lline and finish at union square
@@ -138,12 +140,12 @@ const mta = {
       if (exitTrainAt <= this.unionOnLLine) {
         for (var i = this.oneBeforeUnionLLine; i >= exitTrainAt; i--) {
           let stops = this.lLine[i]
-          this.trainTrip.push(stops);
+          this.secondHalf.push(stops);
         }
         } else {
           for (let k = this.oneAfterUnionLLine; k <= exitTrainAt; k++) {
             let stops = this.lLine[k]
-            this.trainTrip.push(stops);
+            this.secondHalf.push(stops);
           }
         }
       },
@@ -152,12 +154,12 @@ const mta = {
     if (enterTrainAt < this.unionOnSixLine) {
       for (let i = enterTrainAt; i <= this.unionOnSixLine; i++) {
         let stops = this.sixLine[i]
-        this.trainTrip.push(stops);
+        this.firstHalf.push(stops);
       }
     } else {
       for (let k = enterTrainAt; k >= this.unionOnSixLine; k--) {
         let stops = this.sixLine[k]
-        this.trainTrip.push(stops);
+        this.firstHalf.push(stops);
       }
     }
   }, // train will start on sixline and finish at union Square
@@ -166,15 +168,22 @@ const mta = {
     if (exitTrainAt <= this.unionOnSixLine) {
       for (var i = this.oneBeforeUnionSixLine; i >= exitTrainAt; i--) {
         let stops = this.sixLine[i]
-        this.trainTrip.push(stops);
+        this.secondHalf.push(stops);
         }
       } else {
         for (let k = this.oneAfterUnionSixLine; k <= exitTrainAt; k++) {
           let stops = this.sixLine[k]
-          this.trainTrip.push(stops);
+          this.secondHalf.push(stops);
         }
       }
     },
+
+  totalStops: 0,
+
+  addTheStops: function () {
+    let addingStops = this.firstHalf.length + this.secondHalf.length
+    this.totalStops = this.totalStops + addingStops
+  },
 
   planTrip: function (startingLine, firstStop, endingLine, lastStop) {
 // gets the index of the first stop
@@ -196,42 +205,69 @@ const mta = {
 
     let indexOfBegin = ourFirstStop
     let indexOfEnd = ourLastStop
-
+    let singleLineTrip = true
 
     if (startingLine === 'nLine' && endingLine === 'nLine') {
         var fullTrip = this.travelBetweenStopsNLine(indexOfBegin, indexOfEnd)
+        singleLineTrip = true
     } else if (startingLine === 'lLine' && endingLine === 'lLine') {
         var fullTrip = this.travelBetweenStopsLLine(indexOfBegin, indexOfEnd)
+        singleLineTrip = true
     } else if (startingLine === 'sixLine' && endingLine === 'sixLine') {
-        var fullTrip = this.travelBetweenStopsSixLine(indexOfBegin, indexOfEnd);
+        var fullTrip = this.travelBetweenStopsSixLine(indexOfBegin, indexOfEnd)
+        singleLineTrip = true
     } else if (startingLine === 'nLine' && endingLine === 'lLine') {
-        var startingAtN = this.nLineToOtherLine(indexOfBegin)
-        var endingAtL = this.otherLineToLLine(indexOfEnd)
+        var startingJourney = this.nLineToOtherLine(indexOfBegin)
+        var endingJourney = this.otherLineToLLine(indexOfEnd)
+        singleLineTrip = false
     } else if (startingLine === 'nLine' &&  endingLine === 'sixLine' ) {
-        var startingAtN = this.nLineToOtherLine(indexOfBegin)
-        var endingAtSix = this.otherLineToSixLine(indexOfEnd)
+        var startingJourney = this.nLineToOtherLine(indexOfBegin)
+        var endingJourney = this.otherLineToSixLine(indexOfEnd)
+        singleLineTrip = false
     } else if (startingLine === 'lLine' && endingLine === 'nLine') {
-        var startingAtL = this.lLineToOtherLine(indexOfBegin)
-        var endingAtN = this.otherLineToNLine(indexOfEnd)
+        var startingJourney = this.lLineToOtherLine(indexOfBegin)
+        var endingJourney = this.otherLineToNLine(indexOfEnd)
+        singleLineTrip = false
     } else if (startingLine === 'lLine' && endingLine === 'sixLine') {
-        var startingAtL = this.lLineToOtherLine(indexOfBegin)
-        var endingAtSix = this.otherLineToSixLine(indexOfEnd)
+        var startingJourney = this.lLineToOtherLine(indexOfBegin)
+        var endingJourney = this.otherLineToSixLine(indexOfEnd)
+        singleLineTrip = false
     } else if (startingLine === 'sixLine' && endingLine === 'nLine'){
-        var startingAtSix = this.sixLineToOtherLine(indexOfBegin)
-        var endingAtN = this.otherLineToNLine(indexOfEnd)
+        var startingJourney = this.sixLineToOtherLine(indexOfBegin)
+        var endingJourney = this.otherLineToNLine(indexOfEnd)
+        singleLineTrip = false
     } else if (startingLine === 'sixLine' && endingLine === 'lLine') {
-        var startingAtSix = this.sixLineToOtherLine(indexOfBegin)
-        var endingAtL = this.otherLineToLLine(indexOfEnd)
+        var startingJourney = this.sixLineToOtherLine(indexOfBegin)
+        var endingJourney = this.otherLineToLLine(indexOfEnd)
+        singleLineTrip = false
     } else {
       return undefined
     }
+
+    this.addTheStops()
+
+    if (singleLineTrip === true) {
+      console.log(`You must travel the the following stops on the ${startingLine}: ${this.trainTrip}. Your trip finishes on ${endingLine}. Your train trip has stops`);
+    } else {
+      console.log(`You must travel the the following stops on the ${startingLine}: ${this.firstHalf}. You change at Union station and continue on these stops ${this.secondHalf}. Your trip finishes on the ${endingLine}. Your train trip has stops ${this.totalStops}`);
+    }
+
+
+
   },
 }
 
 
-mta.planTrip('sixLine', 'Grand Central', 'lLine', '8th')
+// console.log() shows output similar to this:
+// "You must travel through the following stops on the N line: 34th, 28th, 23rd, Union Square."
+// "Change at Union Square."
+// "Your journey continues through the following stops: 23rd, 28th, 33rd."
+// "7 stops in total."
+mta.planTrip('nLine', '23rd', 'lLine', '8th')
 
-console.log(mta.trainTrip);
+// console.log(mta.trainTrip);
+console.log(mta.firstHalf);
+console.log(mta.secondHalf);
 
 
 // maybe write a few similar function that can be passed in
